@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>蜗牛AI学习互动 · Zoom会议配置</title>
+<style>
+:root{
+  --bg-cream:#FFF8F2;--bg-warm:#FFF5EB;--card-white:#FFFFFF;
+  --text-primary:#2D2B32;--text-secondary:#6B6678;--text-muted:#9E99AA;
+  --accent-pink:#FF8FAB;--accent-mint:#6EE7B7;--accent-sky:#7DD3FC;
+  --accent-lavender:#C4B5FD;--accent-peach:#FCA5A5;--accent-yellow:#FDE68A;
+  --accent-coral:#FDA4AF;--green:#34D399;--red:#FB7185;
+  --radius:24px;--radius-sm:16px;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg-cream);color:var(--text-primary);overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+.brand-bar{display:flex;align-items:center;justify-content:center;padding:10px 16px;background:rgba(255,255,255,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,.04);z-index:200;flex-shrink:0;position:fixed;top:0;left:0;right:0}
+.brand-bar .brand-logo{height:36px;width:auto}
+@media(max-width:480px){.brand-bar .brand-logo{height:28px}}
+
+/* Screens */
+.screen{display:none;min-height:calc(100vh - 56px);padding-top:56px}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* Start Screen */
+#startScreen{background:linear-gradient(135deg,#FFF0F5,#F0F8FF);padding:24px 20px;text-align:center}
+.start-title{font-size:28px;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#FF8FAB,#7DD3FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.start-sub{font-size:15px;color:var(--text-secondary);margin-bottom:32px;line-height:1.6}
+.start-badge{display:inline-block;background:var(--card-white);border-radius:var(--radius-sm);padding:12px 24px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.start-badge span{font-size:14px;color:var(--text-muted)}
+.start-badge strong{color:var(--text-primary);font-size:18px}
+.btn-start{background:linear-gradient(135deg,#FF8FAB,#C4B5FD);color:#fff;border:none;padding:16px 48px;border-radius:50px;font-size:17px;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 20px rgba(255,143,171,.3)}
+.btn-start:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(255,143,171,.4)}
+.btn-start:active{transform:translateY(0)}
+
+/* Quiz Screen */
+#quizScreen{padding:0;width:100%}
+.quiz-progress{width:100%;padding:12px 20px 0;display:flex;align-items:center;gap:12px}
+.quiz-progress .bar{flex:1;height:6px;background:rgba(0,0,0,.06);border-radius:3px;overflow:hidden}
+.quiz-progress .bar-fill{height:100%;background:linear-gradient(90deg,#FF8FAB,#C4B5FD);border-radius:3px;transition:width .4s ease}
+.quiz-progress .label{font-size:13px;color:var(--text-muted);white-space:nowrap;min-width:50px;text-align:right}
+.quiz-card{width:100%;max-width:600px;margin:0 auto;padding:20px;animation:slideUp .4s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.quiz-inner{background:var(--card-white);border-radius:var(--radius);padding:28px 24px;box-shadow:0 2px 16px rgba(0,0,0,.06)}
+.q-module{display:inline-block;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:12px;color:#fff}
+.q-text{font-size:17px;font-weight:600;line-height:1.6;margin-bottom:20px}
+.q-contact{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.q-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;flex-shrink:0}
+.q-name{font-size:13px;color:var(--text-muted)}
+.q-options{display:flex;flex-direction:column;gap:10px}
+.q-opt{padding:14px 18px;border-radius:var(--radius-sm);border:2px solid rgba(0,0,0,.06);cursor:pointer;transition:all .2s;font-size:15px;line-height:1.5;background:rgba(255,255,255,.7)}
+.q-opt:hover{border-color:var(--accent-pink);background:rgba(255,143,171,.04)}
+.q-opt.selected{border-color:var(--accent-pink);background:rgba(255,143,171,.08);font-weight:600}
+.q-opt.correct{border-color:var(--green);background:rgba(52,211,153,.1);font-weight:600}
+.q-opt.wrong{border-color:var(--red);background:rgba(251,113,133,.08)}
+.q-opt.disabled{pointer-events:none}
+
+/* Explanation */
+.explanation{margin-top:16px;padding:16px 18px;background:linear-gradient(135deg,#F0F8FF,#F8F0FF);border-radius:var(--radius-sm);font-size:14px;line-height:1.7;color:var(--text-secondary);animation:slideUp .3s ease}
+.explanation strong{color:var(--text-primary)}
+.explanation .knowledge{display:inline-block;background:rgba(255,143,171,.12);color:#e8547c;padding:2px 10px;border-radius:10px;font-size:12px;font-weight:600;margin-top:8px}
+.btn-next{margin-top:16px;width:100%;padding:14px;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;background:linear-gradient(135deg,#FF8FAB,#C4B5FD);color:#fff;box-shadow:0 3px 14px rgba(255,143,171,.25)}
+.btn-next:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(255,143,171,.35)}
+.btn-next:active{transform:translateY(0)}
+
+/* Result Screen */
+#resultScreen{background:linear-gradient(135deg,#F0FFF4,#F0F8FF);padding:24px 20px;text-align:center;width:100%}
+.result-card{background:var(--card-white);border-radius:var(--radius);padding:32px 24px;max-width:420px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.result-score{font-size:52px;font-weight:800;background:linear-gradient(135deg,#34D399,#7DD3FC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.result-label{font-size:16px;color:var(--text-secondary);margin-top:4px}
+.result-bar{width:100%;height:8px;background:rgba(0,0,0,.06);border-radius:4px;margin:20px 0;overflow:hidden}
+.result-bar-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.result-msg{font-size:15px;color:var(--text-primary);margin-bottom:24px;line-height:1.6}
+.btn-review{background:var(--card-white);border:2px solid rgba(0,0,0,.08);padding:12px 28px;border-radius:50px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--text-primary);margin-bottom:10px}
+.btn-review:hover{border-color:var(--accent-pink);color:var(--accent-pink)}
+.btn-retry{background:linear-gradient(135deg,#FF8FAB,#C4B5FD);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 3px 14px rgba(255,143,171,.25);transition:all .2s}
+.btn-retry:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(255,143,171,.35)}
+
+/* Review Screen */
+#reviewScreen{padding:68px 16px 32px;width:100%}
+.review-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:20px}
+.review-item{max-width:600px;margin:0 auto 16px;background:var(--card-white);border-radius:var(--radius-sm);padding:18px;box-shadow:0 1px 8px rgba(0,0,0,.04)}
+.review-item .ri-q{font-size:15px;font-weight:600;margin-bottom:10px;line-height:1.5}
+.review-item .ri-ans{font-size:14px;margin-bottom:4px;padding-left:12px}
+.review-item .ri-correct{color:var(--green)}
+.review-item .ri-wrong{color:var(--red)}
+.review-item .ri-exp{font-size:13px;color:var(--text-secondary);margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.04);line-height:1.6}
+.btn-back{display:block;margin:20px auto;background:linear-gradient(135deg,#FF8FAB,#C4B5FD);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 3px 14px rgba(255,143,171,.25);transition:all .2s}
+.btn-back:hover{transform:translateY(-2px)}
+
+/* Gradient backgrounds */
+.snail-bg-1{background:linear-gradient(135deg,#FFF0F5,#FFE4EC)}.snail-bg-2{background:linear-gradient(135deg,#F0FFF4,#E6FFE6)}.snail-bg-3{background:linear-gradient(135deg,#F0F8FF,#E6F2FF)}.snail-bg-4{background:linear-gradient(135deg,#F8F0FF,#F0E6FF)}.snail-bg-5{background:linear-gradient(135deg,#FFF5F0,#FFEEE6)}.snail-bg-6{background:linear-gradient(135deg,#FFFCF0,#FFF8E6)}.snail-bg-7{background:linear-gradient(135deg,#FFF0F0,#FFE8E8)}.snail-bg-8{background:linear-gradient(135deg,#F0FFF5,#E6FFEE)}.snail-bg-9{background:linear-gradient(135deg,#F8F0FF,#F3E8FF)}.snail-bg-10{background:linear-gradient(135deg,#FFF0F5,#FFE8F0)}.snail-bg-11{background:linear-gradient(135deg,#F0FFFF,#E6FAFA)}.snail-bg-12{background:linear-gradient(135deg,#FFFDF5,#FFF8EE)}.snail-bg-13{background:linear-gradient(135deg,#FFF0F3,#FFEAEF)}.snail-bg-14{background:linear-gradient(135deg,#FFFCF0,#FFF5E6)}.snail-bg-15{background:linear-gradient(135deg,#F8F0FF,#F5EAFF)}
+
+/* Module badge colors */
+.badge-m1{background:linear-gradient(135deg,#FF8FAB,#FDA4AF)}.badge-m2{background:linear-gradient(135deg,#6EE7B7,#34D399)}.badge-m3{background:linear-gradient(135deg,#7DD3FC,#60A5FA)}.badge-m4{background:linear-gradient(135deg,#C4B5FD,#A78BFA)}.badge-m5{background:linear-gradient(135deg,#FDE68A,#FCA5A5)}
+</style>
+</head>
+<body>
+
+<!-- Brand Bar -->
+<div class="brand-bar" id="brandBar">
+  <img src="logo.png" alt="蜗牛AI Snail AI" class="brand-logo">
+</div>
+
+<!-- Start Screen -->
+<div class="screen active" id="startScreen">
+  <div class="start-badge"><span>蜗牛学院 · 互动答题</span></div>
+  <div class="start-title">Zoom 会议配置</div>
+  <div class="start-sub">20号 & 23号线上活动<br>主持人权限 · 静音管理 · 背景设置 · 账号登录</div>
+  <div class="start-badge"><span>共 <strong>15</strong> 题</span></div>
+  <button class="btn-start" onclick="startQuiz()">开始答题</button>
+</div>
+
+<!-- Quiz Screen -->
+<div class="screen" id="quizScreen">
+  <div class="quiz-progress">
+    <div class="bar"><div class="bar-fill" id="progressBar" style="width:0%"></div></div>
+    <div class="label" id="progressLabel">1/15</div>
+  </div>
+  <div class="quiz-card" id="quizCard"></div>
+</div>
+
+<!-- Result Screen -->
+<div class="screen" id="resultScreen">
+  <div class="result-card">
+    <div class="result-score" id="resultScore">0</div>
+    <div class="result-label">答对题数 / 15</div>
+    <div class="result-bar"><div class="result-bar-fill" id="resultBar" style="width:0%"></div></div>
+    <div class="result-msg" id="resultMsg"></div>
+    <button class="btn-review" onclick="showReview()">查看解析</button>
+    <br>
+    <button class="btn-retry" onclick="startQuiz()">再来一次</button>
+  </div>
+</div>
+
+<!-- Review Screen -->
+<div class="screen" id="reviewScreen">
+  <div class="review-title">答题解析</div>
+  <div id="reviewList"></div>
+  <button class="btn-back" onclick="startQuiz()">重新答题</button>
+</div>
+
+<script>
+// Question Data (correctText + distractors mode)
+const modules = [
+  {
+    id:1, title:'主持人权限', subtitle:'Host Permissions', badgeClass:'badge-m1',
+    questions:[
+      {
+        id:1,
+        contact:{name:'Coco Li',initial:'C',role:'活动策划',color:'#FF8FAB'},
+        text:'23号活动中，Michael用自己的账号登录Zoom后，他获得的权限是什么？',
+        correctText:'自动获得主持人（Host）权限',
+        distractors:['仅获得参会者权限','获得联席主持人权限','需要手动申请主持人权限'],
+        explanation:'Zoom的机制是：<strong>用自己的账号登录即自动成为主持人</strong>，无需额外申请或审批。这是Zoom对会议创建者/指定主持人的默认行为。',
+        knowledge:'主持人权限'
+      },
+      {
+        id:2,
+        contact:{name:'Bo Shu',initial:'B',role:'技术支持',color:'#6EE7B7'},
+        text:'23号活动中，Michael获得主持人权限后，下一步应做什么？',
+        correctText:'将主持人权限转交给吴清',
+        distractors:['直接开始会议','设置静音选项','修改虚拟背景'],
+        explanation:'流程是<strong>登录→自动成为主持人→手动转交主持人权限给吴清</strong>。吴清获得权限后负责后续所有会议设置和现场管理。',
+        knowledge:'权限转交'
+      },
+      {
+        id:3,
+        contact:{name:'Mian Lin',initial:'M',role:'线上参会者',color:'#7DD3FC'},
+        text:'在Zoom中，转交主持人权限的正确操作路径是什么？',
+        correctText:'在参会者列表中找到目标人，选择"指定为主持人"',
+        distractors:['在聊天窗口输入转交指令','关闭会议后重新以新主持登录','在设置中修改主持人选项'],
+        explanation:'Zoom转交主持人的标准操作：<strong>点击"参会者"→找到目标人→点击更多→选择"指定为主持人"</strong>。没有其他快捷方式。',
+        knowledge:'权限转交流程'
+      }
+    ]
+  },
+  {
+    id:2, title:'静音管理', subtitle:'Mute Management', badgeClass:'badge-m2',
+    questions:[
+      {
+        id:4,
+        contact:{name:'David Yao',initial:'D',role:'活动执行',color:'#34D399'},
+        text:'为防止参会者进入时产生杂音，需要开启哪个功能？',
+        correctText:'所有人加入会议时静音（Mute participants on entry）',
+        distractors:['关闭所有参会者的摄像头','开启等候室功能','设置会议密码'],
+        explanation:'<strong>"Mute on entry"</strong>功能确保每位参会者进入时自动静音，避免环境噪音干扰线上活动。这是大型线上活动的基本配置。',
+        knowledge:'入场静音'
+      },
+      {
+        id:5,
+        contact:{name:'Ling Chan',initial:'L',role:'现场协调',color:'#FCA5A5'},
+        text:'为确保线上参会者无法自行开麦说话，需要关闭哪个权限？',
+        correctText:'自我解除静音（Allow participants to unmute themselves）',
+        distractors:['关闭参会者聊天功能','禁止参会者查看参会者列表','关闭参会者视频功能'],
+        explanation:'即使设置了入场静音，如果<strong>不关闭"自我解除静音"</strong>，参会者仍可点击麦克风自行开麦。关闭后只有主持人能解除个别参会者的静音。',
+        knowledge:'禁止自我解除静音'
+      },
+      {
+        id:6,
+        contact:{name:'Isabella F',initial:'I',role:'线上观众',color:'#C4B5FD'},
+        text:'静音管理的完整两步操作是什么？',
+        correctText:'①开启入场静音 ②关闭自我解除静音',
+        distractors:['①关闭自我解除静音 ②关闭聊天','①开启等候室 ②关闭自我解除静音','①入场静音 ②关闭视频功能'],
+        explanation:'静音管理两步缺一不可：<strong>①"Mute on entry"确保入场无杂音；②"Disable self-unmute"确保全程无法自行开麦</strong>。两步配合才能完全控制音频环境。',
+        knowledge:'静音管理两步法'
+      }
+    ]
+  },
+  {
+    id:3, title:'背景与视频', subtitle:'Background & Video', badgeClass:'badge-m3',
+    questions:[
+      {
+        id:7,
+        contact:{name:'Steven Wei',initial:'S',role:'主持人',color:'#60A5FA'},
+        text:'当Zoom虚拟背景出现异常显示时，正确的处理方式是什么？',
+        correctText:'进入后台将虚拟背景设置为"无"（None）',
+        distractors:['重启Zoom客户端','更换其他虚拟背景','关闭摄像头再重新打开'],
+        explanation:'虚拟背景异常时，<strong>进入Zoom设置→背景与滤镜→选择"无"（None）</strong>是最直接的修复方式。换其他背景可能仍有问题，重启也不一定能解决。',
+        knowledge:'虚拟背景修复'
+      },
+      {
+        id:8,
+        contact:{name:'Danielle',initial:'D',role:'活动助理',color:'#7DD3FC'},
+        text:'修改虚拟背景设置时，需要从哪里操作？',
+        correctText:'从Zoom后台设置中操作',
+        distractors:['在会议聊天窗口中操作','从会议邀请链接中操作','在参会者列表中操作'],
+        explanation:'虚拟背景属于<strong>Zoom的账户/客户端级别设置</strong>，需要进入设置（齿轮图标）→背景与滤镜 中调整，不是会议中可以直接更改的选项。',
+        knowledge:'后台设置路径'
+      },
+      {
+        id:9,
+        contact:{name:'Carter Peng',initial:'C',role:'技术顾问',color:'#FDE68A'},
+        text:'20号活动对线上参会者的发言方式有什么限制？',
+        correctText:'线上参会者只能通过打字交流，不能通过Zoom发言',
+        distractors:['线上参会者可以随时开麦发言','线上参会者需要举手后才能发言','线上参会者只能在讨论环节开麦'],
+        explanation:'20号活动定位为<strong>纯收听模式</strong>，现场发言不通过Zoom传递。线上参会者只能通过文字聊天参与互动，这是活动性质决定的。',
+        knowledge:'20号活动定位'
+      }
+    ]
+  },
+  {
+    id:4, title:'账号与登录', subtitle:'Account & Login', badgeClass:'badge-m4',
+    questions:[
+      {
+        id:10,
+        contact:{name:'Felix',initial:'F',role:'主持人',color:'#A78BFA'},
+        text:'Robin在23号活动中应该如何登录Zoom？',
+        correctText:'使用自己的账号登录，无需使用他人账号',
+        distractors:['借用Michael的账号登录','使用会议创建者的账号登录','创建一个新账号登录'],
+        explanation:'<strong>各自使用自己账号登录</strong>是正确的做法。登录后只需修改显示名称即可，不需要共享账号。共享账号违反安全策略且可能造成权限混乱。',
+        knowledge:'账号登录原则'
+      },
+      {
+        id:11,
+        contact:{name:'Mandy Chen',initial:'M',role:'活动管理',color:'#C4B5FD'},
+        text:'Robin登录自己的Zoom账号后，还需要做什么来标识身份？',
+        correctText:'修改显示名称（Display Name）',
+        distractors:['上传个人头像','设置个人会议号','开启虚拟背景'],
+        explanation:'登录后<strong>修改显示名称</strong>是最关键的步骤，确保其他参会者能识别你的身份。Zoom支持在会议中直接修改显示名：参会者→更多→重命名。',
+        knowledge:'显示名称修改'
+      },
+      {
+        id:12,
+        contact:{name:'Susan Li',initial:'S',role:'参会者',color:'#8B5CF6'},
+        text:'23号活动中关于账号使用的最终方案是什么？',
+        correctText:'各自用自己账号登录，登录后转交主持人权限',
+        distractors:['统一使用一个共享账号登录','由主持人代为登录所有账号','使用临时访客身份加入'],
+        explanation:'最终方案明确了<strong>两个独立步骤：①每人用自己账号登录 ②登录后按需转交主持人权限</strong>。这样既保证了账号安全，又实现了权限灵活分配。',
+        knowledge:'账号与权限分离'
+      }
+    ]
+  },
+  {
+    id:5, title:'综合应用', subtitle:'Integration', badgeClass:'badge-m5',
+    questions:[
+      {
+        id:13,
+        contact:{name:'Zoe',initial:'Z',role:'新人学员',color:'#FDA4AF'},
+        text:'20号活动（周六）与23号活动在参会者权限上最大的区别是什么？',
+        correctText:'20号参会者只能听和打字，23号参会者可能被授予发言权限',
+        distractors:['20号需要密码加入，23号不需要','20号使用等候室，23号不需要','20号限制人数，23号不限'],
+        explanation:'<strong>20号是纯收听模式</strong>（打字交流），<strong>23号则更灵活</strong>，主持人可以按需解除个别参会者的静音。两次活动性质不同，权限配置也不同。',
+        knowledge:'活动差异对比'
+      },
+      {
+        id:14,
+        contact:{name:'Julia',initial:'J',role:'活动协调',color:'#FDE68A'},
+        text:'完整的主持人权限转交流程是什么？',
+        correctText:'登录→自动成为主持人→手动转交给指定人员→指定人员负责后续设置',
+        distractors:['登录→申请主持人→审批通过→开始设置','登录→联系管理员→分配权限→开始设置','登录→修改设置→转交权限→退出会议'],
+        explanation:'正确流程：<strong>①登录Zoom ②系统自动赋予主持人身份 ③手动将Host转交给目标人员 ④目标人员负责后续所有设置</strong>。无需申请或审批，Zoom自动识别。',
+        knowledge:'权限转交完整流程'
+      },
+      {
+        id:15,
+        contact:{name:'Charlene Cai',initial:'C',role:'总结复盘',color:'#FCA5A5'},
+        text:'本次Zoom配置会议中，哪个功能被提及但未详细说明操作步骤？',
+        correctText:'等候室（Waiting Room）的启用流程',
+        distractors:['虚拟背景的设置方法','静音管理的操作步骤','主持人权限的转交方式'],
+        explanation:'会议中提到了<strong>Waiting Room（等候室）</strong>功能，但没有展开说明具体的启用和配置步骤。这是一个需要后续补充的知识点。',
+        knowledge:'知识点盲区'
+      }
+    ]
+  }
+];
+
+// State
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let answers = [];
+
+// Shuffle
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function buildShuffledQuestion(q){
+  const allOptions=[q.correctText,...shuffleArray(q.distractors)];
+  const shuffled=shuffleArray(allOptions);
+  const correctIndex=shuffled.indexOf(q.correctText);
+  return{...q,options:shuffled,answer:correctIndex};
+}
+
+function startQuiz(){
+  questions=[];
+  modules.forEach(m=>{
+    m.questions.forEach(q=>{
+      questions.push(buildShuffledQuestion(q));
+    });
+  });
+  questions=shuffleArray(questions);
+  currentQ=0;
+  score=0;
+  answers=[];
+  showScreen('quizScreen');
+  renderQuestion();
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderQuestion(){
+  const q=questions[currentQ];
+  const mod=modules.find(m=>m.questions.find(mq=>mq.id===q.id));
+  const progress=((currentQ)/questions.length*100);
+  document.getElementById('progressBar').style.width=progress+'%';
+  document.getElementById('progressLabel').textContent=(currentQ+1)+'/'+questions.length;
+
+  const card=document.getElementById('quizCard');
+  card.innerHTML=`
+    <div class="quiz-inner snail-bg-${q.id}">
+      <div class="q-module ${mod?mod.badgeClass:''}">${mod?mod.title:'综合'}</div>
+      <div class="q-contact">
+        <div class="q-avatar" style="background:${q.contact.color}">${q.contact.initial}</div>
+        <div class="q-name">${q.contact.name} · ${q.contact.role}</div>
+      </div>
+      <div class="q-text">${q.text}</div>
+      <div class="q-options" id="optionsContainer">
+        ${q.options.map((opt,i)=>`<div class="q-opt" data-idx="${i}" onclick="selectOption(${i})">${opt}</div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function selectOption(idx){
+  const q=questions[currentQ];
+  const opts=document.querySelectorAll('.q-opt');
+  opts.forEach(o=>o.classList.add('disabled'));
+
+  const isCorrect=idx===q.answer;
+  if(isCorrect) score++;
+
+  answers.push({question:q,selectedIdx:idx,correct:isCorrect});
+
+  opts.forEach((o,i)=>{
+    if(i===q.answer) o.classList.add('correct');
+    if(i===idx&&!isCorrect) o.classList.add('wrong');
+  });
+
+  const exp=document.createElement('div');
+  exp.className='explanation';
+  exp.innerHTML=`${q.explanation}<div class="knowledge">${q.knowledge}</div>`;
+  document.querySelector('.quiz-inner').appendChild(exp);
+
+  const btn=document.createElement('button');
+  btn.className='btn-next';
+  btn.textContent=currentQ<questions.length-1?'下一题':'查看结果';
+  btn.onclick=currentQ<questions.length-1?nextQuestion:showResult;
+  document.querySelector('.quiz-inner').appendChild(btn);
+}
+
+function nextQuestion(){
+  currentQ++;
+  renderQuestion();
+  document.getElementById('quizCard').scrollIntoView({behavior:'smooth'});
+}
+
+function showResult(){
+  showScreen('resultScreen');
+  const pct=Math.round(score/questions.length*100);
+  document.getElementById('resultScore').textContent=score;
+  const barFill=document.getElementById('resultBar');
+  barFill.style.width=pct+'%';
+  barFill.style.background=pct>=80?'linear-gradient(90deg,#34D399,#6EE7B7)':pct>=60?'linear-gradient(90deg,#FDE68A,#FCA5A5)':'linear-gradient(90deg,#FB7185,#FDA4AF)';
+
+  const msgs=[
+    {min:93,text:'满分水平！Zoom配置高手，可以独立负责线上活动了！'},
+    {min:80,text:'掌握得很好！再复习一下细节就完美了。'},
+    {min:60,text:'基础概念掌握了，但一些关键步骤还需要加强记忆。'},
+    {min:0,text:'还需要多看几遍课件，建议重新学习后再来挑战！'}
+  ];
+  const msg=msgs.find(m=>pct>=m.min);
+  document.getElementById('resultMsg').textContent=msg?msg.text:'继续加油！';
+}
+
+function showReview(){
+  showScreen('reviewScreen');
+  const list=document.getElementById('reviewList');
+  list.innerHTML=answers.map((a,i)=>{
+    const q=a.question;
+    return `<div class="review-item">
+      <div class="ri-q">${i+1}. ${q.text}</div>
+      <div class="ri-ans ${a.correct?'ri-correct':'ri-wrong'}">你的答案：${q.options[a.selectedIdx]} ${a.correct?'✓':'✗'}</div>
+      ${!a.correct?`<div class="ri-ans ri-correct">正确答案：${q.correctText}</div>`:''}
+      <div class="ri-exp">${q.explanation}</div>
+    </div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
